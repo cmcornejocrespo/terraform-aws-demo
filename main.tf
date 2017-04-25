@@ -20,4 +20,10 @@ resource "aws_subnet" "demo" {
   }
 }
 
-
+# Create an internet gateway to give our subnet access to the outside world
+resource "aws_internet_gateway" "demo" {
+  vpc_id = "${aws_vpc.demo.id}"
+  tags {
+    Name = "internet_gateway-enmilocalfunciona"
+  }
+}
