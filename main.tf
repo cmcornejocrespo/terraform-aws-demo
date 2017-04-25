@@ -1,11 +1,12 @@
 provider "aws" {
   region = "${var.aws_region}"
 }
-resource "aws_instance" "enmilocalfunciona" {
-  ami = "${lookup(var.aws_amis, var.aws_region)}"
-  instance_type = "t2.micro"
+
+# Create a VPC to launch our instances into
+resource "aws_vpc" "demo" {
+  cidr_block = "10.0.0.0/16"
   tags {
-    name = "tag-enmilocalfunciona"
-    Name = "enmilocalfunciona"
+    Name = "vpc-enmilocalfunciona"
   }
 }
+
