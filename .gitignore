@@ -1,5 +1,4 @@
 # Compiled files
-*.tfstate
-*.tfstate.backup
 /.idea/
-/.terraform.tfstate.lock.info
+/*.iml
+*.iml
