@@ -6,8 +6,12 @@ Terraform-related code for AWS used in enmilocalfunciona.io
 This is the terraform code that backs up the blog entry in enmilocalfunciona.
 Provisions a very simple infrastructure composed by:
 - VPC
-- subnet
+- Subnet
 - IGW and outer internet access
+- Security Group entries
+- ELB
+
+It will provision an infrastructure that will expose a http server via port 80.
 
 ## Requirements
 - Terraform 0.9.4+, install [here](https://www.terraform.io/downloads.html)
