@@ -2,5 +2,3 @@
 /.idea/
 /*.iml
 *.iml
-/terraform.tfstate
-/terraform.tfstate.backup
