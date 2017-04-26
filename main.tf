@@ -89,3 +89,15 @@ resource "aws_security_group" "default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+resource "aws_elb" "web-access" {
+  name = "aws-elb-web-access"
+  subnets         = ["${aws_subnet.demo.id}"]
+  security_groups = ["${aws_security_group.elb.id}"]
+
+  listener {
+    instance_port     = 80
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+}
