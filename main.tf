@@ -93,6 +93,7 @@ resource "aws_elb" "web-access" {
   name = "aws-elb-web-access"
   subnets         = ["${aws_subnet.demo.id}"]
   security_groups = ["${aws_security_group.elb.id}"]
+  instances       = ["${aws_instance.web.id}"]
 
   listener {
     instance_port     = 80
@@ -100,4 +101,25 @@ resource "aws_elb" "web-access" {
     lb_port           = 80
     lb_protocol       = "http"
   }
+}
+
+resource "aws_instance" "web" {
+  instance_type = "t2.micro"
+  tags {
+    Name = "ec2-web"
+  }
+
+# Lookup the correct AMI based on the region
+  # we specified
+  ami = "${lookup(var.aws_amis, var.aws_region)}"
+
+  # Our Security group to allow HTTP and SSH access
+  vpc_security_group_ids = ["${aws_security_group.default.id}"]
+
+  # We're going to launch into the same subnet as our ELB. In a production
+  # environment it's more common to have a separate private subnet for
+  # backend instances.
+  subnet_id = "${aws_subnet.demo.id}"
+
+  user_data = "${file("user-data.txt")}"
 }
