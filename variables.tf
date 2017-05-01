@@ -11,3 +11,7 @@ variable "aws_amis" {
     eu-central-1 = "ami-060cde69" //EU (Frankfurt)
   }
 }
+variable "key_name" {
+  description = "Name of the SSH keypair to use in AWS."
+  default = "enmilocalfunciona-terraform-key"
+}

@@ -1,3 +1,4 @@
+# Specify the provider and access details
 provider "aws" {
   region = "${var.aws_region}"
 }
@@ -35,11 +36,26 @@ resource "aws_route" "internet_access" {
   gateway_id             = "${aws_internet_gateway.demo.id}"
 }
 
-# A security group for the ELB so it is accessible via the web
-resource "aws_security_group" "elb" {
-  name        = "security_group_elb"
-  description = "SG used to link to LB"
+
+resource "aws_eip" "default" {
+  instance = "${aws_instance.web.id}"
+  vpc      = true
+}
+
+# Our default security group to access
+# the instances over SSH and HTTP
+resource "aws_security_group" "default" {
+  name        = "eip_example"
+  description = "Used in the terraform"
   vpc_id      = "${aws_vpc.demo.id}"
+
+  # SSH access from anywhere
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   # HTTP access from anywhere
   ingress {
@@ -58,68 +74,32 @@ resource "aws_security_group" "elb" {
   }
 }
 
-# Our default security group to access
-# the instances over SSH and HTTP
-resource "aws_security_group" "default" {
-  name        = "security_group_default"
-  description = "Default SSH SG linked to subnet access"
-  vpc_id      = "${aws_vpc.demo.id}"
-
-  # SSH access from anywhere
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # HTTP access from the VPC
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-  }
-
-  # outbound internet access
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-resource "aws_elb" "web-access" {
-  name = "aws-elb-web-access"
-  subnets         = ["${aws_subnet.demo.id}"]
-  security_groups = ["${aws_security_group.elb.id}"]
-  instances       = ["${aws_instance.web.id}"]
-
-  listener {
-    instance_port     = 80
-    instance_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
-}
-
 resource "aws_instance" "web" {
   instance_type = "t2.micro"
-  tags {
-    Name = "ec2-web"
-  }
 
-# Lookup the correct AMI based on the region
+  # Lookup the correct AMI based on the region
   # we specified
   ami = "${lookup(var.aws_amis, var.aws_region)}"
+
+  # The name of our SSH keypair you've created and downloaded
+  # from the AWS console.
+  #
+  # https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#KeyPairs:
+  #
+  key_name = "${var.key_name}"
 
   # Our Security group to allow HTTP and SSH access
   vpc_security_group_ids = ["${aws_security_group.default.id}"]
 
-  # We're going to launch into the same subnet as our ELB. In a production
-  # environment it's more common to have a separate private subnet for
-  # backend instances.
   subnet_id = "${aws_subnet.demo.id}"
 
-  user_data = "${file("user-data.txt")}"
+  # We run a remote provisioner on the instance after creating it.
+  # In this case, we just install nginx and start it. By default,
+  # this should be on port 80
+  user_data = "${file("userdata.sh")}"
+
+  #Instance tags
+  tags {
+    Name = "eip-web-ec2"
+  }
 }
