@@ -38,7 +38,7 @@ resource "aws_route" "internet_access" {
 
 
 resource "aws_eip" "default" {
-  instance = "${aws_instance.web.id}"
+  instance = "${aws_instance.ec2.id}"
   vpc      = true
 }
 
@@ -74,7 +74,7 @@ resource "aws_security_group" "default" {
   }
 }
 
-resource "aws_instance" "web" {
+resource "aws_instance" "ec2" {
   instance_type = "t2.micro"
 
   # Lookup the correct AMI based on the region
@@ -96,10 +96,10 @@ resource "aws_instance" "web" {
   # We run a remote provisioner on the instance after creating it.
   # In this case, we just install nginx and start it. By default,
   # this should be on port 80
-  user_data = "${file("userdata.sh")}"
+  user_data = "${file("provision.sh")}"
 
   #Instance tags
   tags {
-    Name = "eip-web-ec2"
+    Name = "eip-ec2-terraform"
   }
 }
