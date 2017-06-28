@@ -5,7 +5,7 @@ provider "aws" {
 
 # Create a VPC to launch our instances into
 resource "aws_vpc" "demo" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = "${var.vpc_cidr}"
   tags {
     Name = "vpc-enmilocalfunciona"
   }
@@ -14,7 +14,7 @@ resource "aws_vpc" "demo" {
 # Create a subnet to launch our instances into
 resource "aws_subnet" "demo" {
   vpc_id                  = "${aws_vpc.demo.id}"
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "${var.subnet_cidr}"
   map_public_ip_on_launch = true
   tags {
     Name = "subnet-enmilocalfunciona"
@@ -45,8 +45,8 @@ resource "aws_eip" "default" {
 # Our default security group to access
 # the instances over SSH and HTTP
 resource "aws_security_group" "default" {
-  name        = "eip_example"
-  description = "Used in the terraform"
+  name        = "enmilocalfunciona group"
+  description = "Security Group used for enmilocalfunciona"
   vpc_id      = "${aws_vpc.demo.id}"
 
   # SSH access from anywhere
