@@ -1,16 +1,6 @@
 variable "aws_region" {
   description = "AWS region to launch servers."
-  default     = "eu-west-1"
-}
-
-variable "vpc_cidr" {
-  description = "CIDR for the whole VPC"
-  default = "10.0.0.0/16"
-}
-
-variable "subnet_cidr" {
-  description = "CIDR for the Subnet"
-  default = "10.0.1.0/24"
+  default     = "eu-west-2"
 }
 
 variable "aws_amis" {
@@ -23,5 +13,29 @@ variable "aws_amis" {
 }
 variable "key_name" {
   description = "Name of the SSH keypair to use in AWS."
-  default = "enmilocalfunciona-terraform-key"
+  default = {
+    eu-west-1 = "enmilocalfunciona-terraform-key-eu-west-1" // EU (Ireland)
+    eu-west-2 = "enmilocalfunciona-terraform-key-eu-west-2" // EU (London)
+    eu-central-1 = "enmilocalfunciona-terraform-key-eu-central-1" //EU (Frankfurt)
+  }
+}
+
+variable "instance_type" {
+  default     = "t2.micro"
+  description = "AWS instance type"
+}
+
+variable "asg_min" {
+  description = "Min numbers of servers in ASG"
+  default     = "1"
+}
+
+variable "asg_max" {
+  description = "Max numbers of servers in ASG"
+  default     = "8"
+}
+
+variable "asg_desired" {
+  description = "Desired numbers of servers in ASG"
+  default     = "2"
 }
