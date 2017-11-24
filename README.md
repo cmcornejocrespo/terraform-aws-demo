@@ -1,18 +1,11 @@
 # terraform-aws-demo
-Terraform-related code for AWS used in enmilocalfunciona.io
+Terraform-related code to create ASG in AWS supporting enmilocalfunciona.io blog entry.
 
 # What is this?
 
-This is the terraform code that backs up the blog entry in enmilocalfunciona.
-Provisions a very simple infrastructure composed by:
-- VPC
-- Subnet
-- IGW and outer internet access
-- Security Group entries
-- ELB
-- EC2
+This is the terraform code that backs up the blog [entry](http://enmilocalfunciona.io/infraestructura-como-codigo-iii-terrafom-y-aws/).
 
-It will provision an infrastructure that will expose a http server via port 80.
+![alt image](images/aws-layout.png "AWS ASG layout")
 
 ## Requirements
 - Terraform 0.9.4+, install [here](https://www.terraform.io/downloads.html)
@@ -20,15 +13,24 @@ It will provision an infrastructure that will expose a http server via port 80.
 
 ## Usage
 
+Inititialise terraform dependencies
+```sh
+$ terraform init
+```
 Check status
 ```sh
 $ terraform plan 
 ```
 
-Builds infrastructure
+Build infrastructure
 
 ```sh
 $ terraform apply
+```
+Build infrastructure scaling up to 6 instances
+
+```sh
+$ terraform apply -var asg_desired=6
 ```
 
 Destroy infrastructure
